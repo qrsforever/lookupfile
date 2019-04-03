@@ -150,6 +150,13 @@ function! s:SetupBuf()
   inoremap <silent> <buffer> <expr> <C-E> <SID>HidePopup()
   inoremap <silent> <buffer> <expr> <CR> <SID>AcceptFile(0, "\<CR>")
   inoremap <silent> <buffer> <expr> <C-O> <SID>AcceptFile(1, "\<C-O>")
+  " lidong add
+  inoremap <silent> <buffer> <expr> <C-T> <SID>AcceptFile(1, "\<C-T>")
+  inoremap <silent> <buffer> <expr> <C-S> <SID>AcceptFile(2, "\<C-S>")
+  inoremap <silent> <buffer> <expr> <C-V> <SID>AcceptFile(3, "\<C-V>")
+  nnoremap <buffer> <Esc><Esc> <C-W>q
+  inoremap <buffer> <Esc><Esc> <Esc><C-W>q
+  " lidong end
   " This prevents the "Whole line completion" from getting triggered with <BS>,
   " however this might make the dropdown kind of flash.
   inoremap <buffer> <expr> <BS>       pumvisible()?"\<C-E>\<BS>":"\<BS>"
@@ -163,14 +170,23 @@ function! s:SetupBuf()
         \ "\"\\<Lt>C-N>\"")
   inoremap <buffer> <expr> <silent> <Up> <SID>GetCommand(1, 1, "\<C-P>",
         \ "\"\\<Lt>C-P>\"")
+  " lidong add
+  inoremap <buffer> <expr> <silent> <C-J> <SID>GetCommand(1, 1, "\<C-N>",
+        \ "\"\\<Lt>C-N>\"")
+  inoremap <buffer> <expr> <silent> <C-K> <SID>GetCommand(1, 1, "\<C-P>",
+        \ "\"\\<Lt>C-P>\"")
+  " lidong end
   inoremap <buffer> <expr> <silent> <PageDown> <SID>GetCommand(1, 0,
         \ "\<PageDown>", '')
   inoremap <buffer> <expr> <silent> <PageUp> <SID>GetCommand(1, 0,
         \ "\<PageUp>", '')
   nnoremap <silent> <buffer> o :OpenFile<CR>
   nnoremap <silent> <buffer> O :OpenFile!<CR>
-  command! -buffer -nargs=0 -bang OpenFile
-        \ :call <SID>OpenCurFile('<bang>' != '')
+  " lidong cha
+  command! -buffer -nargs=1 -bang OpenFile
+        \ :call <SID>OpenCurFile('<args>')
+  " command! -buffer -nargs=0 -bang OpenFile
+        " \ :call <SID>OpenCurFile('<bang>' != '')
   command! -buffer -nargs=0 -bang AddPattern :call <SID>AddPattern()
   nnoremap <buffer> <silent> <Plug>LookupFile :call lookupfile#CloseWindow()<CR>
   inoremap <buffer> <silent> <Plug>LookupFile <C-E><C-C>:call lookupfile#CloseWindow()<CR>
@@ -247,8 +263,11 @@ function! lookupfile#AcceptFile(splitWin, key)
 
   " Skip the first match, which is essentially the same as pattern.
   let nextCmd = "\<C-N>\<C-R>=(getline('.') == lookupfile#lastPattern)?\"\\<C-N>\":''\<CR>"
-  let acceptCmd = "\<C-Y>\<Esc>:AddPattern\<CR>:OpenFile".(a:splitWin?'!':'').
+  " lidong cha
+  let acceptCmd = "\<C-Y>\<Esc>:AddPattern\<CR>:OpenFile".(a:splitWin).
         \ "\<CR>"
+  " let acceptCmd = "\<C-Y>\<Esc>:AddPattern\<CR>:OpenFile".(a:splitWin?'!':'').
+        " \ "\<CR>"
   if getline('.') ==# g:lookupfile#lastPattern
     if len(g:lookupfile#lastResults) == 0
       " FIXME: shouldn't this be an error?
@@ -321,7 +340,16 @@ function! s:OpenCurFile(splitWin)
       " Ignore, this anyway means the file was found.
     catch
       try
-        exec (splitOpen?'split':'edit') fileName
+        " lidong add 
+        if a:splitWin == 1
+          exec 'tabedit' fileName
+        elseif a:splitWin == 2
+          exec 'split' fileName
+        elseif a:splitWin == 3
+          exec 'vsplit' fileName
+        else
+          exec (splitOpen?'split':'edit') fileName
+        endif
       catch /^Vim\%((\a\+)\)\=:E325/
         " Ignore, this anyway means the file was found.
       endtry
