@@ -170,12 +170,6 @@ function! s:SetupBuf()
         \ "\"\\<Lt>C-N>\"")
   inoremap <buffer> <expr> <silent> <Up> <SID>GetCommand(1, 1, "\<C-P>",
         \ "\"\\<Lt>C-P>\"")
-  " lidong add
-  inoremap <buffer> <expr> <silent> <C-J> <SID>GetCommand(1, 1, "\<C-N>",
-        \ "\"\\<Lt>C-N>\"")
-  inoremap <buffer> <expr> <silent> <C-K> <SID>GetCommand(1, 1, "\<C-P>",
-        \ "\"\\<Lt>C-P>\"")
-  " lidong end
   inoremap <buffer> <expr> <silent> <PageDown> <SID>GetCommand(1, 0,
         \ "\<PageDown>", '')
   inoremap <buffer> <expr> <silent> <PageUp> <SID>GetCommand(1, 0,
