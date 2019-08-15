@@ -154,7 +154,7 @@ function! s:SetupBuf()
   inoremap <silent> <buffer> <expr> <C-T> <SID>AcceptFile(1, "\<C-T>")
   inoremap <silent> <buffer> <expr> <C-S> <SID>AcceptFile(2, "\<C-S>")
   inoremap <silent> <buffer> <expr> <C-V> <SID>AcceptFile(3, "\<C-V>")
-  nnoremap <buffer> <Esc><Esc> <C-W>q
+  nnoremap <buffer> <Esc> <C-W>q
   inoremap <buffer> <Esc><Esc> <Esc><C-W>q
   " lidong end
   " This prevents the "Whole line completion" from getting triggered with <BS>,
@@ -252,7 +252,9 @@ endfunction
 
 function! lookupfile#AcceptFile(splitWin, key)
   if len(g:lookupfile#lastResults) == 0 && !s:IsValid(getline('.'))
-    return "\<C-O>:echohl ErrorMsg | echo 'No such file or directory' | echohl NONE\<CR>"
+    " return "\<C-O>:echohl ErrorMsg | echo 'No such file or directory' | echohl NONE\<CR>"
+    " lidong mod
+    return "\<C-O>:call lookupfile#CloseWindow()\<CR>\<Esc>"
   endif
 
   " Skip the first match, which is essentially the same as pattern.
